@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -678,10 +678,26 @@ require('lazy').setup({
         mode = '',
         desc = '[F]ormat buffer',
       },
+      {
+        '<leader>ft',
+        function()
+          local formatter_disabled = vim.g.disable_autoformat
+          local action = formatter_disabled and 'Enable' or 'Disable'
+          local cmd = 'Format' .. action
+          vim.cmd(cmd)
+          print(cmd)
+        end,
+        mode = 'n',
+        desc = '[F]ormatter [T]oggle',
+      },
     },
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
+        -- Disable autoformatting on demand
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
+        end
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
@@ -706,6 +722,23 @@ require('lazy').setup({
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
+    vim.api.nvim_create_user_command('FormatDisable', function(args)
+      if args.bang then
+        -- FormatDisable! will disable formatting just for this buffer
+        vim.b.disable_autoformat = true
+      else
+        vim.g.disable_autoformat = true
+      end
+    end, {
+      desc = 'Disable autoformat-on-save',
+      bang = true,
+    }),
+    vim.api.nvim_create_user_command('FormatEnable', function()
+      vim.b.disable_autoformat = false
+      vim.g.disable_autoformat = false
+    end, {
+      desc = 'Re-enable autoformat-on-save',
+    }),
   },
 
   { -- Autocompletion
