@@ -15,7 +15,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Explorer
-vim.keymap.set('n', '<leader>v', vim.cmd.Ex)
+vim.keymap.set('n', '<leader>v', vim.cmd.Ex, { desc = 'Show file tree / explorer' })
 
 -- Line numbers
 vim.opt.number = true
