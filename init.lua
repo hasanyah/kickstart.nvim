@@ -108,8 +108,8 @@ vim.opt.splitbelow = true
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.list = true
+-- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 --
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -144,9 +144,9 @@ end)
 
 -- [[ Basic Keymaps ]]
 -- move line down
-vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move line down' })
 -- move line up
-vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move line up' })
 
 -- pg down
 vim.keymap.set({ 'n', 'v' }, '<C-j>', '<C-d>zz')
@@ -259,37 +259,30 @@ require('lazy').setup({
   },
 
   {
-    'tpope/vim-fugitive',
-    config = function()
-      vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
-    end,
-  },
-
-  {
     'theprimeagen/harpoon',
     config = function()
       local mark = require 'harpoon.mark'
       local ui = require 'harpoon.ui'
-      vim.keymap.set('n', '<leader>a', mark.add_file)
-      vim.keymap.set('n', '<leader>sa', ui.toggle_quick_menu)
+      vim.keymap.set('n', '<leader>ha', mark.add_file, { desc = '[H]arpoon [A]dd' })
+      vim.keymap.set('n', '<leader>hl', ui.toggle_quick_menu, { desc = '[H]arpoon [L]ist' })
       vim.keymap.set('n', '<leader>1', function()
         ui.nav_file(1)
-      end)
+      end, { desc = '[1]st Harpoon item' })
       vim.keymap.set('n', '<leader>2', function()
         ui.nav_file(2)
-      end)
+      end, { desc = '[2]nd Harpoon item' })
       vim.keymap.set('n', '<leader>3', function()
         ui.nav_file(3)
-      end)
+      end, { desc = '[3]rd Harpoon item' })
       vim.keymap.set('n', '<leader>4', function()
         ui.nav_file(4)
-      end)
+      end, { desc = '[4]th Harpoon item' })
       vim.keymap.set('n', '<leader>5', function()
         ui.nav_file(5)
-      end)
+      end, { desc = '[5]th Harpoon item' })
       vim.keymap.set('n', '<leader>6', function()
         ui.nav_file(6)
-      end)
+      end, { desc = '[6]th Harpoon item' })
     end,
   },
 
@@ -976,6 +969,13 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+
+  {
+    'tpope/vim-fugitive',
+    config = function()
+      vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
+    end,
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
