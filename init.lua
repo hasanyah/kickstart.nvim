@@ -99,7 +99,7 @@ vim.opt.updatetime = 50
 
 -- Decrease mapped sequence wait time
 -- Displays which-key popup sooner
-vim.opt.timeoutlen = 50
+vim.opt.timeoutlen = 5000
 
 -- Configure how new splits should be opened
 vim.opt.splitright = true
@@ -187,10 +187,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
-vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+-- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+-- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+-- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -273,8 +273,20 @@ require('lazy').setup({
     config = function()
       local mark = require 'harpoon.mark'
       local ui = require 'harpoon.ui'
-      vim.keymap.set('n', '<leader>ha', mark.add_file, { desc = '[H]arpoon [A]dd' })
-      vim.keymap.set('n', '<leader>hl', ui.toggle_quick_menu, { desc = '[H]arpoon [L]ist' })
+      vim.keymap.set('n', '<leader>ht', mark.add_file, { desc = '[H]arpoon Add [t]' })
+      vim.keymap.set('n', '<leader>hs', ui.toggle_quick_menu, { desc = '[H]arpoon Li[s]t' })
+      vim.keymap.set('n', '<leader>hc', function()
+        ui.nav_file(1)
+      end, { desc = '[1]st Harpoon item' })
+      vim.keymap.set('n', '<leader>hi', function()
+        ui.nav_file(2)
+      end, { desc = '[2]nd Harpoon item' })
+      vim.keymap.set('n', '<leader>he', function()
+        ui.nav_file(3)
+      end, { desc = '[3]rd Harpoon item' })
+      vim.keymap.set('n', '<leader>ha', function()
+        ui.nav_file(4)
+      end, { desc = '[4]th Harpoon item' })
       vim.keymap.set('n', '<leader>1', function()
         ui.nav_file(1)
       end, { desc = '[1]st Harpoon item' })
@@ -287,12 +299,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>4', function()
         ui.nav_file(4)
       end, { desc = '[4]th Harpoon item' })
-      vim.keymap.set('n', '<leader>5', function()
-        ui.nav_file(5)
-      end, { desc = '[5]th Harpoon item' })
-      vim.keymap.set('n', '<leader>6', function()
-        ui.nav_file(6)
-      end, { desc = '[6]th Harpoon item' })
     end,
   },
 
@@ -443,6 +449,14 @@ require('lazy').setup({
             '!.git',
             '--iglob',
             '!*/pkg/*',
+            '--iglob',
+            '!node_modules/*',
+            '--iglob',
+            '!storage/*',
+            '--iglob',
+            '!*/vendor/*',
+            '--iglob',
+            '!*.min.js',
             '--no-ignore-vcs',
           },
         },
@@ -458,9 +472,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', function()
-        builtin.find_files {
-          find_command = { 'rg', '--files', '--iglob', '!.git', '--iglob', '!*.min.js', '--iglob', '!*/pkg/*', '--no-ignore-vcs', '--hidden' },
-        }
+        builtin.find_files { no_ignore = true }
       end, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>st', function()
         builtin.grep_string { search = vim.fn.input 'Grep > ' }
@@ -1035,13 +1047,13 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup {
         mappings = {
-          add = 'gsa', -- Add surrounding in Normal and Visual modes
-          delete = 'gsd', -- Delete surrounding
-          find = 'gsf', -- Find surrounding (to the right)
-          find_left = 'gsF', -- Find surrounding (to the left)
-          highlight = 'gsh', -- Highlight surrounding
-          replace = 'gsr', -- Replace surrounding
-          update_n_lines = 'gsn', -- Update `n_lines`
+          add = 'sa', -- Add surrounding in Normal and Visual modes
+          delete = 'sd', -- Delete surrounding
+          find = 'sf', -- Find surrounding (to the right)
+          find_left = 'sF', -- Find surrounding (to the left)
+          highlight = 'sh', -- Highlight surrounding
+          replace = 'sr', -- Replace surrounding
+          update_n_lines = 'sn', -- Update `n_lines`
 
           suffix_last = 'l', -- Suffix to search with "prev" method
           suffix_next = 'n', -- Suffix to search with "next" method
@@ -1096,10 +1108,9 @@ require('lazy').setup({
   {
     'tpope/vim-fugitive',
     config = function()
-      vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
+      vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = 'Fu[g]itive' })
     end,
   },
-
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
