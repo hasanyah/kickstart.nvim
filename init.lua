@@ -436,6 +436,17 @@ require('lazy').setup({
           },
         },
         defaults = {
+          mappings = {
+            i = {
+              ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
+              ['<C-k>'] = require('telescope.actions').preview_scrolling_up,
+              ['<C-j>'] = require('telescope.actions').preview_scrolling_down,
+            },
+            n = {
+              ['<C-k>'] = require('telescope.actions').preview_scrolling_up,
+              ['<C-j>'] = require('telescope.actions').preview_scrolling_down,
+            },
+          },
           vimgrep_arguments = {
             'rg',
             '--color=never',
@@ -449,6 +460,8 @@ require('lazy').setup({
             '!.git',
             '--iglob',
             '!*/pkg/*',
+            '--iglob',
+            '!src/node_modules/*',
             '--iglob',
             '!node_modules/*',
             '--iglob',
@@ -469,6 +482,7 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
+      local toggle_preview = require('telescope.actions.layout').toggle_preview
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', function()
@@ -840,6 +854,9 @@ require('lazy').setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        formatters_by_ft = {
+          blade = { 'blade-formatter' },
+        },
       },
     },
     vim.api.nvim_create_user_command('FormatDisable', function(args)
@@ -1085,7 +1102,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'php' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
