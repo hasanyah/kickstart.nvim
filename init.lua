@@ -178,6 +178,9 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Toggle line wrapping
+vim.keymap.set('n', '<leader>ww', ':set wrap!<CR>')
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -275,16 +278,16 @@ require('lazy').setup({
       local ui = require 'harpoon.ui'
       vim.keymap.set('n', '<leader>ht', mark.add_file, { desc = '[H]arpoon Add [t]' })
       vim.keymap.set('n', '<leader>hs', ui.toggle_quick_menu, { desc = '[H]arpoon Li[s]t' })
-      vim.keymap.set('n', '<leader>hc', function()
+      vim.keymap.set('n', '<leader>ha', function()
         ui.nav_file(1)
       end, { desc = '[1]st Harpoon item' })
-      vim.keymap.set('n', '<leader>hi', function()
+      vim.keymap.set('n', '<leader>he', function()
         ui.nav_file(2)
       end, { desc = '[2]nd Harpoon item' })
-      vim.keymap.set('n', '<leader>he', function()
+      vim.keymap.set('n', '<leader>hi', function()
         ui.nav_file(3)
       end, { desc = '[3]rd Harpoon item' })
-      vim.keymap.set('n', '<leader>ha', function()
+      vim.keymap.set('n', '<leader>hc', function()
         ui.nav_file(4)
       end, { desc = '[4]th Harpoon item' })
       vim.keymap.set('n', '<leader>1', function()
@@ -486,7 +489,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', function()
-        builtin.find_files { no_ignore = true }
+        builtin.find_files { no_ignore = true, hidden = true }
       end, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>st', function()
         builtin.grep_string { search = vim.fn.input 'Grep > ' }
@@ -734,7 +737,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -746,6 +748,11 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        clangd = {
+          capabilities = {
+            signatureHelpProvider = false,
+          },
+        },
 
         lua_ls = {
           -- cmd = { ... },
@@ -934,24 +941,23 @@ require('lazy').setup({
         --
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
-          -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
-          -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
-
-          -- Scroll the documentation window [b]ack / [f]orward
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-
-          -- Accept ([y]es) the completion.
-          --  This will auto-import if your LSP supports it.
-          --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          -- -- Select the [n]ext item
+          -- ['<C-n>'] = cmp.mapping.select_next_item(),
+          -- -- Select the [p]revious item
+          -- ['<C-p>'] = cmp.mapping.select_prev_item(),
+          --
+          -- -- Scroll the documentation window [b]ack / [f]orward
+          -- ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          -- ['<C-f>'] = cmp.mapping.scroll_docs(4),
+          -- -- Accept ([y]es) the completion.
+          -- --  This will auto-import if your LSP supports it.
+          -- --  This will expand snippets if the LSP sent a snippet.
+          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
           --['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
@@ -1102,7 +1108,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'php' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'php', 'cpp' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
