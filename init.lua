@@ -176,10 +176,15 @@ vim.keymap.set('n', '*', "*''")
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>qq', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>qt', function()
+  local current = vim.diagnostic.config().virtual_text
+  vim.diagnostic.config { virtual_text = not current }
+  print('Diagnostic Virtual Text ' .. (not current and 'Enabled' or 'Disabled'))
+end, { desc = 'Diagnostic [T]oggle virtual text' })
 
 -- Toggle line wrapping
-vim.keymap.set('n', '<leader>ww', ':set wrap!<CR>')
+vim.keymap.set('n', '<leader>ww', ':set wrap!<CR>', { desc = 'Toggle line wrapping' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -470,6 +475,8 @@ require('lazy').setup({
             '--iglob',
             '!storage/*',
             '--iglob',
+            '!build/*',
+            '--iglob',
             '!*/vendor/*',
             '--iglob',
             '!*.min.js',
@@ -485,15 +492,16 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
-      local toggle_preview = require('telescope.actions.layout').toggle_preview
+      -- local toggle_preview = require('telescope.actions.layout').toggle_preview
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', function()
-        builtin.find_files { no_ignore = true, hidden = true }
-      end, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>st', function()
         builtin.grep_string { search = vim.fn.input 'Grep > ' }
       end, { desc = '[S]earch grep in [t]erm' })
+      vim.keymap.set('n', '<leader>sa', function()
+        builtin.find_files { no_ignore = true, hidden = true }
+      end, { desc = '[S]earch [A]ll Files' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -1128,12 +1136,47 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
+  -- Fugitive
   {
     'tpope/vim-fugitive',
     config = function()
       vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = 'Fu[g]itive' })
     end,
   },
+
+  -- Markdown Preview
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app && npm install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+    end,
+    ft = { 'markdown' },
+    vim.keymap.set('n', '<leader>mp', ':MarkdownPreview<CR>', { desc = 'MarkdownPreview' }),
+  },
+  -- Flash Search
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    ---@type Flash.Config
+    opts = {
+      modes = {
+        char = {
+          jump_labels = true,
+        },
+      },
+    },
+    -- stylua: ignore
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "<c-r>", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-e>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
+  },
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
